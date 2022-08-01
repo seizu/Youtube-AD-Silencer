@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name     Youtube Ad Silencer
-// @version  0.1.1
+// @version  0.1.2
 // @grant    none
 // @include http://www.youtube.com/*
 // @include https://www.youtube.com/*
@@ -80,7 +80,6 @@
     if (element) {
       console.log("found: video-ads ytp-ad-module");
 
-    
       if (adFlag == true && isMuted == false) {
         if (getElementByXpath("//button[@class='ytp-mute-button ytp-button']/*[local-name()='svg']/*[local-name()='path' and @class='ytp-svg-fill ytp-svg-volume-animation-speaker']"))
           isMuted = false;
@@ -93,12 +92,7 @@
         if (muteElement && isMuted == false) {
           isMuted = true;
           muteElement.click();
-          console.log("Disable Sound");
-          //const elems = document.querySelectorAll("video, audio");
-          //for (const el of elems) {
-          //  el.muted = true
-          //}
-          
+          console.log("Disable Sound");         
         }
       } else {
         if (muteElement && isMuted == true) {
@@ -106,8 +100,7 @@
           isMuted = false;
           console.log("Enable Sound");
         }
-      }
-      
+      }      
     }
 
     if (element) {
