@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name     Youtube Ad Silencer
-// @version  0.1.2
-// @grant    none
-// @include http://www.youtube.com/*
+// @name         YT Ad Silencer
+// @description  Automatically mute and skip YT ads
+// @version      0.1.3
+// @grant        none
 // @include https://www.youtube.com/*
+// @include http://www.youtube.com/*
 // @exclude http://www.youtube.com/embed/*
 // @exclude https://www.youtube.com/embed/*
 // @match http://www.youtube.com/*
@@ -16,7 +17,7 @@
 // @match https://*.googlevideo.com/videoplayback*
 // @match http://*.youtube.com/videoplayback*
 // @match https://*.youtube.com/videoplayback*
-// @match https://m.youtube.com/watch*
+// @match https://*.youtube.com/watch*
 // ==/UserScript==
 
 (function () {
@@ -24,6 +25,7 @@
   var observer = null;
   var isMuted = false;
   var adFlag = false;
+  var element = null;
 
   function setObserver(selector) {
     if (observer != null) {
@@ -38,13 +40,6 @@
     }
     observer = new MutationObserver(callback);
     observer.observe(node, { attributes: true, childList: true, subtree: true });
-  }
-
-  function htmlToElement(html) {
-    var template = document.createElement('template');
-    html = html.trim();
-    template.innerHTML = html;
-    return template.content.firstChild;
   }
 
   const callback = function (records, observer) {
@@ -81,39 +76,37 @@
       console.log("found: video-ads ytp-ad-module");
 
       if (adFlag == true && isMuted == false) {
-        if (getElementByXpath("//button[@class='ytp-mute-button ytp-button']/*[local-name()='svg']/*[local-name()='path' and @class='ytp-svg-fill ytp-svg-volume-animation-speaker']"))
+        if (getElementByXpath("//button[@class='ytp-mute-button ytp-button']/*[local-name()='svg']/*[local-name()='path' and @class='ytp-svg-fill ytp-svg-volume-animation-speaker']")) {
           isMuted = false;
-        else
+        } else {
           isMuted = true;
+        }
       }
-     
-      var muteElement = getElementByXpath('//button[@class="ytp-mute-button ytp-button"]');
+
       if (adFlag == true) {
-        if (muteElement && isMuted == false) {
-          isMuted = true;
-          muteElement.click();
-          console.log("Disable Sound");         
-        }
+          console.log("Disable Sound");
+          const elems = document.querySelectorAll("video, audio");
+          for (const el of elems) {
+            el.muted = true;
+          }
       } else {
-        if (muteElement && isMuted == true) {
-          muteElement.click();
-          isMuted = false;
           console.log("Enable Sound");
-        }
-      }      
+          const elems = document.querySelectorAll("video, audio");
+          for (const el of elems) {
+            el.muted = false;
+          }
+      }
     }
 
     if (element) {
       console.log("Set Observer");
       setObserver('div[class="video-ads ytp-ad-module"]');
     }
-  };
+  }
 
   function getElementByXpath(path) {
     return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
   }
 
   setObserver('body');
-  return;
-
 })();
